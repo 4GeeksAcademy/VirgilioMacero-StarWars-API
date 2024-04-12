@@ -81,7 +81,6 @@ def getFavoritesByUser(user_id):
 ##Set Favorite Planets from the first User Active
 @app.route("/users/favorites/planets/<int:planet_id>", methods=["POST"])
 def setFavoritePlanet(planet_id):
-    # Obtener el usuario activo
     user_active = User.query.filter_by(is_active=True).first()
 
     if not user_active:
@@ -118,6 +117,138 @@ def setFavoritePlanetByUser(user_id, planet_id):
     db.session.commit()
 
     return jsonify({"message": "Planet Added to the Collection"}), 200
+
+##Set Favorite Character from the first User Active
+@app.route("/users/favorites/people/<int:character_id>", methods=["POST"])
+def setFavoriteCharacter(character_id):
+    user_active = User.query.filter_by(is_active=True).first()
+
+    if not user_active:
+        return jsonify({"message": "User Not Found"}), 404
+
+    favorite_list = user_active.favorite
+
+    characters = Character.query.get(character_id)
+    if characters in favorite_list.characters:
+        return jsonify({"message": "The Character is already added"}), 400
+
+    favorite_list.characters.append(characters)
+
+    db.session.commit()
+
+    return jsonify({"message": "Character Added to the Collection"}), 200
+
+
+@app.route("/users/<int:user_id>/favorites/people/<int:character_id>", methods=["POST"])
+def setFavoriteCharacterByUser(user_id, character_id):
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"message": "User Not Found"}), 404
+
+    favorite_list = user.favorite
+
+    character = Character.query.get(character_id)
+    if character in favorite_list.characters:
+        return jsonify({"message": "The Character is already added"}), 400
+
+    favorite_list.characters.append(character)
+
+    db.session.commit()
+
+    return jsonify({"message": "Character Added to the Collection"}), 200
+
+##Set Favorite Vehicle from the first User Active
+@app.route("/users/favorites/vehicles/<int:vehicle_id>", methods=["POST"])
+def setFavoriteVehicles(vehicle_id):
+    user_active = User.query.filter_by(is_active=True).first()
+
+    if not user_active:
+        return jsonify({"message": "User Not Found"}), 404
+
+    favorite_list = user_active.favorite
+
+    vehicles = Vehicle.query.get(vehicle_id)
+    if vehicles in favorite_list.vehicles:
+        return jsonify({"message": "The Vehicle is already added"}), 400
+
+    favorite_list.vehicles.append(vehicles)
+
+    db.session.commit()
+
+    return jsonify({"message": "Vehicle Added to the Collection"}), 200
+
+
+@app.route("/users/<int:user_id>/favorites/vehicles/<int:vehicle_id>", methods=["POST"])
+def setFavoriteVehiclesByUser(user_id, vehicle_id):
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"message": "User Not Found"}), 404
+
+    favorite_list = user.favorite
+
+    vehicles = Vehicle.query.get(vehicle_id)
+    if vehicles in favorite_list.vehicles:
+        return jsonify({"message": "The Vehicle is already added"}), 400
+
+    favorite_list.vehicles.append(vehicles)
+
+    db.session.commit()
+
+    return jsonify({"message": "Vehicle Added to the Collection"}), 200
+
+
+@app.route("/users/<int:user_id>/favorites/planets/<int:planet_id>", methods=["DELETE"])
+def deleteFavoritePlanet(user_id, planet_id):
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"message": "User Not Found"}), 404
+
+    favorite_list = user.favorite
+
+    planet = Planet.query.get(planet_id)
+
+    favorite_list.planets.remove(planet)
+    db.session.commit()
+
+
+    return jsonify({"message": "Planet Removed"}), 200
+
+@app.route("/users/<int:user_id>/favorites/characters/<int:character_id>", methods=["DELETE"])
+def deleteFavoriteCharacter(user_id, character_id):
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"message": "User Not Found"}), 404
+
+    favorite_list = user.favorite
+
+    character = Character.query.get(character_id)
+
+    favorite_list.characters.remove(character)
+    db.session.commit()
+
+
+    return jsonify({"message": "Character Removed"}), 200
+
+@app.route("/users/<int:user_id>/favorites/vehicles/<int:vehicle_id>", methods=["DELETE"])
+def deleteFavoriteVehicle(user_id, vehicle_id):
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"message": "User Not Found"}), 404
+
+    favorite_list = user.favorite
+
+    vehicle = Vehicle.query.get(vehicle_id)
+
+    favorite_list.vehicles.remove(vehicle)
+    db.session.commit()
+
+
+    return jsonify({"message": "Vehicle Removed"}), 200
 
 
 """ CHARACTER ROUTES """
